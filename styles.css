@@ -1,15 +1,24 @@
-/* Updated CSS for Pip-Boy interface */
-
-/* Updated CSS for Pip-Boy interface */
+/* Reset and basic styling */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
 body {
     font-family: 'Courier New', Courier, monospace;
     background: #0d0d0d;
     color: #efd947;
+    overflow-x: hidden;
     margin: 0;
     padding: 0;
-    overflow-x: hidden;
-    height: 100vh;
+}
+
+.pipboy {
+    position: relative;
+    max-width: 1200px;
+    margin: 50px;
+    padding: 20px;
 }
 
 .status-bar {
@@ -19,28 +28,24 @@ body {
     background: rgba(26, 26, 26, 0.9);
     color: #efd947;
     border-bottom: 1px solid #efd947;
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    z-index: 1001; /* Ensure the status bar is above the dock */
+    z-index: 1001; /* Ensure it's above other content */
 }
-@media (max-width: 768px) {
-    .pipboy {
-        padding: 10px;
-    }
-}
+
 .pipboy-screen {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 20px;
     padding: 20px;
-    animation: fadeIn 1s ease-in;
+    margin-top: 40px; /* Adjust for status bar height */
 }
 
 .app-icon {
     display: flex;
-    margin-top: 40px; 
+    margin: 10px;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -73,10 +78,10 @@ body {
     color: #efd947;
     border-radius: 10px;
     position: fixed;
-    top: 10%;
-    left: 10%;
+    top: 15%; /* Adjust as needed */
+    left: 10%; /* Adjust as needed */
     width: 80%;
-    height: 80%;
+    height: 70%;
     overflow-y: auto;
     z-index: 1000;
     animation: slideIn 0.5s ease-out;
@@ -144,11 +149,11 @@ button[type="submit"]:hover {
     padding: 10px;
     background: rgba(26, 26, 26, 0.9);
     border-top: 1px solid #efd947;
-    position: absolute;
+    position: fixed;
     bottom: 0;
     left: 0;
-    right: 0;
-    z-index: 1000; /* Ensure the dock is above app-windows */
+    width: 100%;
+    z-index: 1000;
 }
 
 .pipboy-dock button {
@@ -176,9 +181,10 @@ button[type="submit"]:hover {
     color: #efd947;
     border: 1px solid #efd947;
     border-radius: 5px;
-    z-index: 1002; /* Above everything except status bar */
+    z-index: 1002;
     display: none;
 }
+
 /* Loading screen styles */
 
 .loading-screen {
@@ -191,9 +197,9 @@ button[type="submit"]:hover {
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 9999; /* Ensure it's above other content */
+    z-index: 9999;
     opacity: 1;
-    transition: opacity 0.5s ease-in-out; /* Fade-in transition */
+    transition: opacity 0.5s ease-in-out;
 }
 
 .loader {
@@ -211,7 +217,7 @@ button[type="submit"]:hover {
     height: 10px;
     background-color: #efd947;
     border-radius: 5px;
-    animation: progress 3s ease-in-out infinite; /* Progress animation */
+    animation: progress 3s ease-in-out infinite;
 }
 
 @keyframes progress {
@@ -222,9 +228,23 @@ button[type="submit"]:hover {
         width: 100%;
     }
 }
-/* Alternative color scheme */
-.pipboy.alternative-scheme {
-    /* Adjust colors for alternative scheme */
-    background-color: #0d0d0d;
-    color: #00c3ff; /* Adjust text and icon colors */
+
+@media (max-width: 768px) {
+    .pipboy-screen {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        padding: 10px;
+        margin-top: 60px; /* Adjust for smaller screens */
+    }
+
+    .app-window {
+        width: 90%;
+        height: 70%;
+        top: 15%;
+        left: 5%;
+    }
+
+    .pipboy-dock {
+        bottom: unset;
+        top: calc(100vh - 60px); /* Adjust to leave space at bottom for dock */
+    }
 }
