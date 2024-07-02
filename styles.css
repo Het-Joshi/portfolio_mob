@@ -8,7 +8,7 @@ body {
     color: #efd947;
     margin: 0;
     padding: 0;
-    overflow: hidden;
+    overflow-x: hidden;
     height: 100vh;
 }
 
@@ -25,7 +25,11 @@ body {
     right: 0;
     z-index: 1001; /* Ensure the status bar is above the dock */
 }
-
+@media (max-width: 768px) {
+    .pipboy {
+        padding: 10px;
+    }
+}
 .pipboy-screen {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
