@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Het Joshi - Cybersecurity Expert</title>
+    <title>Het Joshi</title>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome CDN -->
@@ -15,7 +15,7 @@
         <div class="status-bar">
             <div class="battery">100%</div>
             <div class="wifi">5-G</div>
-            <div class="time">12:00</div>
+            <div class="time" id="clock">12:00:00</div>
         </div>
         
         <div class="container">
@@ -54,6 +54,7 @@
         </div>
 
         <div class="app-window" id="about">
+            <button class="back"><i class="fas fa-arrow-left"></i></button>
             <header>About Me</header>
             <p>Namaste! I'm Het Joshi, a passionate cybersecurity enthusiast 
                 and FOSS advocate. Currently pursuing my studies at 
@@ -68,22 +69,116 @@
                  where we collaborate on innovative FOSS projects and explore 
                  cutting-edge cybersecurity solutions.
             </p>
-            
-            <img src="het_joshi.jpg" alt="Het Joshi">
+            <div class="image-container">
+                <img class="image-pfp" src="het-joshi.jpg" alt="Het Joshi">
+            </div>
         </div>
+        
         <div class="app-window" id="skills">
-            <!-- Content for Skills -->
+            <button class="back"><i class="fas fa-arrow-left"></i></button>
+            <header>Skills</header>
+            <div class="content">
+                <h3>Programming Languages:</h3>
+                <ul>
+                    <li>C/C++</li>
+                    <li>Java</li>
+                    <li>Python</li>
+                    <li>JavaScript</li>
+                    <li>RUST</li>
+                    <li>Bend</li>
+                </ul>
+                <h3>System Administration:</h3>
+                <ul>
+                    <li>Linux</li>
+                    <li>AWS</li>
+                    <li>Server Maintenance</li>
+                    <li>Self-Hosting Services</li>
+                </ul>
+                <h3>Cybersecurity:</h3>
+                <ul>
+                    <li>Penetration Testing</li>
+                    <li>OSINT</li>
+                    <li>Network Security</li>
+                    <li>BASH Scripting</li>
+                </ul>
+                <h3>Development Tools:</h3>
+                <ul>
+                    <li>Git</li>
+                    <li>JIRA</li>
+                    <li>Jenkins</li>
+                    <li>Terraform</li>
+                </ul>
+                <h3>Other Areas of Interest:</h3>
+                <ul>
+                    <li>Machine Learning</li>
+                    <li>Cloud Computing</li>
+                    <li>Web Application Development</li>
+                </ul>
+            </div>
         </div>
+        
         <div class="app-window" id="projects">
-            <!-- Content for Projects -->
+            <button class="back"><i class="fas fa-arrow-left"></i></button>
+            <header>Projects</header>
+            <div class="content">
+                <h3>Hidden Kernel Module</h3>
+                <p>
+                    <a href="https://github.com/Het-Joshi/Stealth-Kernel-Module" target="_blank">Hidden Kernel Module</a><br>
+                    Developed a Linux Kernel module that remains hidden from search utilities, enhancing system security by preventing unauthorized access detection.
+                </p>
+                <h3>Post-Quantum Framework for IoT Devices</h3>
+                <p>
+                    Created a framework using post-quantum cryptographic algorithms to secure IoT devices against quantum computing threats, ensuring future-proof data protection.
+                </p>
+                <h3>OCPP Protocol Security Assessment for EV Charging Stations</h3>
+                <p>
+                    Conducted a security assessment of the Open Charge Point Protocol (OCPP) for EV charging stations, identifying vulnerabilities and recommending enhancements to improve communication security.
+                </p>
+                <h3>Laboratory for Electro-Optics Systems (LEOS), ISRO</h3>
+                <p>
+                    Developed a secure high-speed interface for communication between a system and a LIDAR sensor using C. Implemented socket programming and network protocols, enhancing data transfer efficiency. Deployed the solution on an embedded system board, ensuring reliable performance in real-time applications.
+                </p>
+                <italics>note: Links for few projects cannot be shared due to current IPR considerations.</italics>
+            </div>
         </div>
+        
         <div class="app-window" id="talks">
-            <!-- Content for Talks & Workshops -->
+            <button class="back"><i class="fas fa-arrow-left"></i></button>
+            <header>Talks & Workshops</header>
+            <div class="content">
+                <h3>FOSSX Challenge at Indian Institute of Technology, Bombay</h3>
+                <p>
+                    <strong>Role:</strong> Guide and Mentor<br>
+                    Mentored 12 teams of participants across India, guiding them in developing white papers on open-source cybersecurity tools. Provided strategic insights and technical expertise, contributing to the development of innovative solutions in cybersecurity.
+                    <a href="https://trustlab.iitb.ac.in/trust-matters-2024-apr-fossx">Event Newsletter</a>
+                </p>
+                <h3>Top Speaker at National Institute of Technology, Calicut</h3>
+                <p>
+                    The FOSSCell in NIT-C awarded this for my talk on security challenges for the future and what we as a community can do to tackle them.
+                    <a href="https://www.fossmeet.net/speakers">List of Speakers</a>
+                </p>
+            </div>
+        <div class="image-container">
+            <img src="Profile.png" class="image-pfp">
+            <img src="iit.jpeg" class="image-pfp">
         </div>
+        </div>
+        
         <div class="app-window" id="contact">
-            <!-- Content for Contact Form -->
+            <button class="back"><i class="fas fa-arrow-left"></i></button>
+            <header>Contact Me</header>
+            <div class="content">
+                <p>If you'd like to get in touch, feel free to reach out through any of the following methods:</p>
+                <ul>
+                    <li><strong>Email:</strong> <a href="mailto:hetjoshi.mukt@pm.me">hetjoshi.mukt@pm.com</a></li>
+                    <li><strong>LinkedIn:</strong> <a href="https://linkedin.com/in/hetjoshi" target="_blank">linkedin.com/in/hetjoshi</a></li>
+                    <li><strong>GitHub:</strong> <a href="https://github.com/Het-Joshi" target="_blank">github.com/Het-Joshi</a></li>
+                </ul>
+                <p>I'm always open to discussing new projects, collaborations, or any inquiries you might have about my work. Looking forward to connecting with you!</p>
+                <img src="hack.png" class="image-pfp2">
+            </div>
         </div>
-
+        
         <div class="pipboy-dock">
             <button class="home"><i class="fas fa-home"></i></button>
             <button class="back"><i class="fas fa-arrow-left"></i></button>
@@ -97,7 +192,7 @@
 
     <!-- Bootstrap JS, jQuery, and your custom script -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="script.js"></script>
 </body>
