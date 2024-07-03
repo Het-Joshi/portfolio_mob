@@ -151,10 +151,16 @@ button[type="submit"]:hover {
     background: rgba(26, 26, 26, 0.9);
     border-top: 1px solid #efd947;
     position: fixed;
-    bottom: 0;
+    bottom: 0; /* Adjust based on your design */
     left: 0;
     width: 100%;
     z-index: 1000;
+}
+
+@media (max-width: 768px) {
+    .pipboy-dock {
+        bottom: 0; /* Ensure it's positioned at the bottom */
+    }
 }
 
 .pipboy-dock button {
@@ -244,7 +250,6 @@ button[type="submit"]:hover {
     }
 
     .pipboy-dock {
-        bottom: unset;
         top: calc(100vh - 60px); /* Adjust to leave space at bottom for dock */
     }
 }
