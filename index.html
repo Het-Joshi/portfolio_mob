@@ -11,14 +11,16 @@
     <!-- Font Awesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');    
         /* --- CSS Variables and Basic Setup --- */
         :root {
             --primary-color: #00ff41; /* Classic Pip-Boy green */
             --background-color: #0a140c;
             --dark-background: #000;
-            --font: 'VT323', monospace;
+            /* --font: 'VT323', monospace; */
+            --font: 'Space Mono', monospace; /* Fallback to Space Mono for better readability */
         }
-
+            
         * {
             box-sizing: border-box;
             margin: 0;
@@ -243,7 +245,7 @@
                 </div>
                 <div class="app-icon" data-app="special">
                     <i class="fas fa-star"></i>
-                    <span>S.P.E.C.I.A.L.</span>
+                    <span>Skills</span>
                 </div>
                  <div class="app-icon" data-app="research">
                     <i class="fas fa-book-open"></i>
