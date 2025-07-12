@@ -2,198 +2,538 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Het Joshi</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Het Joshi - Portfolio</title>
+    <!-- Google Fonts: VT323 for Pip-Boy feel -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <!-- Font Awesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* --- CSS Variables and Basic Setup --- */
+        :root {
+            --primary-color: #00ff41; /* Classic Pip-Boy green */
+            --background-color: #0a140c;
+            --dark-background: #000;
+            --font: 'VT323', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden; /* Prevent body scrolling */
+            background: var(--dark-background);
+            font-family: var(--font);
+            color: var(--primary-color);
+        }
+
+        /* --- Boot Up Screen --- */
+        .boot-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--dark-background);
+            z-index: 10000;
+            display: flex; /* Use flex to center */
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            font-size: 1.2rem;
+            opacity: 1;
+            transition: opacity 1s ease-in-out;
+        }
+        
+        #boot-text {
+            width: 100%;
+            max-width: 800px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        /* --- Main Pip-Boy Container --- */
+        .pipboy {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 1rem;
+            display: none; /* Hidden by default, shown by JS */
+            flex-direction: column;
+            background: var(--background-color);
+            border: 5px solid var(--primary-color);
+            border-radius: 10px;
+            opacity: 0; /* Hidden initially for boot sequence */
+            transition: opacity 0.5s ease-in;
+        }
+        .pipboy.active {
+            display: flex;
+        }
+
+
+        /* --- Screen Effects (Scanlines & Flicker) --- */
+        .screen-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 4px, 6px 100%;
+            animation: flicker 0.15s infinite;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+
+        /* --- Status Bar & Dock --- */
+        .status-bar, .pipboy-dock {
+            flex-shrink: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--primary-color);
+            background: var(--background-color);
+            font-size: 1.2rem;
+        }
+        .status-bar { border-bottom-width: 4px; margin-bottom: 1rem; }
+        .pipboy-dock { border-top-width: 4px; margin-top: 1rem; }
+
+        .pipboy-dock button {
+            background: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            font-family: var(--font);
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            font-size: 1.1rem;
+        }
+        .pipboy-dock button:hover, .pipboy-dock button:active {
+            background: var(--primary-color);
+            color: var(--dark-background);
+        }
+
+        /* --- Main Screen & App Grid --- */
+        .main-screen {
+            flex-grow: 1;
+            overflow-y: auto; /* Allow scrolling for app grid on small screens */
+            padding: 1rem 0;
+            position: relative;
+        }
+
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1.5rem;
+            padding: 0 1rem;
+        }
+
+        .app-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 1rem;
+            border: 2px solid var(--primary-color);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .app-icon:hover, .app-icon:active {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px var(--primary-color);
+        }
+
+        .app-icon i { font-size: 3rem; margin-bottom: 0.5rem; }
+        .app-icon span { font-size: 1.1rem; }
+
+        /* --- App Windows --- */
+        .app-window {
+            display: none; /* Controlled by JS */
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: var(--background-color);
+            z-index: 1000;
+            flex-direction: column;
+            padding: 0 1rem 1rem 1rem;
+        }
+        .app-window.active {
+            display: flex;
+        }
+
+        .app-window .back {
+            align-self: flex-start;
+            background: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 0.5rem 1rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            font-family: var(--font);
+            font-size: 1.1rem;
+        }
+
+        .app-window header {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 5px var(--primary-color);
+            flex-shrink: 0;
+        }
+
+        .app-content {
+            flex-grow: 1;
+            overflow-y: auto; /* Key change: only this part scrolls */
+            padding-right: 1rem; /* for scrollbar */
+            font-size: 1.2rem;
+        }
+
+        .app-content p, .app-content ul, .app-content h3 { margin-bottom: 1rem; }
+        .app-content ul { list-style-position: inside; padding-left: 0; list-style-type: none; }
+        .app-content li { margin-bottom: 0.5rem; }
+        .app-content li strong { color: #87f5b3; }
+        .app-content a { color: var(--primary-color); text-decoration: underline; }
+        .app-content h3 { color: #87f5b3; font-size: 1.5rem; }
+        .app-content .note-text { font-style: italic; color: #a1c9a1; }
+        .image-container { text-align: center; margin: 1rem 0; }
+        .image-pfp { max-width: 200px; border: 2px solid var(--primary-color); margin-top: 1rem; }
+    </style>
 </head>
 <body>
+
+    <!-- Boot Up Sequence Screen -->
+    <div class="boot-screen">
+        <pre id="boot-text"></pre>
+    </div>
+
     <div class="pipboy">
+        <!-- The visual overlay for scanlines and flicker -->
+        <div class="screen-overlay"></div>
+
         <div class="status-bar">
-            <div class="battery">100%</div>
-            <div class="wifi">5-G</div>
+            <div class="battery"><i class="fas fa-battery-full"></i> 100%</div>
+            <div class="wifi"><i class="fas fa-wifi"></i> 5-G</div>
             <div class="time" id="clock">12:00:00</div>
         </div>
-        
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-4 col-md-6">
-                    <div class="app-icon" data-app="about">
-                        <i class="fas fa-user"></i>
-                        <span>About Me</span>
-                    </div>
+
+        <div class="main-screen">
+            <!-- App Grid (Home Screen) -->
+             <div class="app-grid">
+                <div class="app-icon" data-app="about">
+                    <i class="fas fa-user"></i>
+                    <span>About Me</span>
                 </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="app-icon" data-app="skills">
-                        <i class="fas fa-tools"></i>
-                        <span>Skills</span>
-                    </div>
+                <div class="app-icon" data-app="special">
+                    <i class="fas fa-star"></i>
+                    <span>S.P.E.C.I.A.L.</span>
                 </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="app-icon" data-app="projects">
-                        <i class="fas fa-project-diagram"></i>
-                        <span>Projects</span>
-                    </div>
+                 <div class="app-icon" data-app="research">
+                    <i class="fas fa-book-open"></i>
+                    <span>Research</span>
                 </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="app-icon" data-app="talks">
-                        <i class="fas fa-comments"></i>
-                        <span>Talks & Workshops</span>
-                    </div>
+                <div class="app-icon" data-app="projects">
+                    <i class="fas fa-project-diagram"></i>
+                    <span>Experience & Projects</span>
                 </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="app-icon" data-app="contact">
-                        <i class="fas fa-envelope"></i>
-                        <span>Contact</span>
+                <div class="app-icon" data-app="contact">
+                    <i class="fas fa-envelope"></i>
+                    <span>Contact</span>
+                </div>
+            </div>
+
+            <!-- App Windows (Content) -->
+            <div class="app-window" id="about">
+                <button class="back"><i class="fas fa-arrow-left"></i> Back</button>
+                <header>About Me</header>
+                <div class="app-content">
+                    <p>
+                        I am a graduate student pursuing a Master's in Computer Science at Northeastern University, Boston. 
+                        A passionate cybersecurity enthusiast and FOSS advocate, I completed my Bachelor's in CS at Ramaiah Institute of Technology, India. 
+                        I also have a deep interest in security Research!
+                    </p>
+                    <p>
+                        My interests span network security, OSINT, and software development, with a focus on fostering privacy and upholding user rights. 
+                        I am the founder of Mukti, the largest student-run FOSS community in India, where we collaborate on innovative projects and explore 
+                        cutting-edge cybersecurity solutions.
+                    </p>
+                    <div class="image-container">
+                        <img class="image-pfp" 
+                        src="./Het-PipBoy.png" 
+                        alt="Het Joshi" 
+                        onerror="this.onerror=null;this.src='https://placehold.co/200x200/0a140c/00ff41?text=Image+Not+Found';">
                     </div>
                 </div>
             </div>
+
+            <div class="app-window" id="special">
+                <button class="back"><i class="fas fa-arrow-left"></i> Back</button>
+                <header>S.P.E.C.I.A.L.</header>
+                <div class="app-content">
+                    <h3>Core Attributes</h3>
+                    <ul>
+                        <li><strong>S</strong>ecurity: Penetration Testing, OSINT, Network Security, Threat Modelling, Cryptography</li>
+                        <li><strong>P</strong>rogramming: C/C++, Java, Python, JavaScript, RUST, Golang, Shell Scripting</li>
+                        <li><strong>E</strong>ngineering: Linux, AWS, Server Maintenance, Docker & Kubernetes, Networking Protocols</li>
+                        <li><strong>C</strong>loud & DevOps: Git, JIRA, Jenkins, Terraform, CI/CD Pipeline, Ansible</li>
+                        <li><strong>I</strong>nnovation: Machine Learning, Post-Quantum Cryptography, FOSS Advocacy, Research</li>
+                        <li><strong>A</strong>pplication Dev: Web Application Development, Socket Programming, User Privacy</li>
+                        <li><strong>L</strong>eadership: Mentoring, Public Speaking, Community Building (Mukti Founder)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="app-window" id="research">
+                <button class="back"><i class="fas fa-arrow-left"></i> Back</button>
+                <header>Research & Publications</header>
+                <div class="app-content">
+                    <h3>Publications & Patents</h3>
+                    <p><a href="https://scholar.google.com/citations?user=WNNiy-8AAAAJ&hl=en" target="_blank">View Full Profile on Google Scholar</a></p>
+                    
+                    <h3>Book Chapter: Cryptographic Bastions</h3>
+                    <p>
+                        Published in: <a href="https://books.google.co.in/books?hl=en&lr=&id=T84UEQAAQBAJ&oi=fnd&pg=PT7&ots=8Fj9N83ceS&sig=mfzaT7jk9i2gBhBoqnAqI3N1_j8&redir_esc=y#v=onepage&q&f=false">
+                            Cloud Security: Concepts, Applications, and Practices (CRC Press)</a>. 
+                            This chapter explores cryptography, security policies, and best practices in cloud environments using GCP and AWS.
+                    </p>
+
+                    <h3>Patent: CHARGE GUARD</h3>
+                    <p>
+                        An innovative method for early detection of DDoS attacks at EV charging stations using a lightweight micro neural network. 
+                        I designed the attack architecture and mitigation strategies.
+                    </p>
+
+                    <h3>Paper: CyberGuard EV</h3>
+                    <p>
+                        Accepted in Algorithms for Intelligent Systems (Springer). 
+                        This paper presents a novel technique for the early detection and mitigation of DDoS attacks in EV charging networks.
+                    </p>
+                </div>
+            </div>
+
+           <div class="app-window" id="projects">
+                <button class="back"><i class="fas fa-arrow-left"></i> Back</button>
+                <header>Professional Experience and Projects</header>
+                <div class="app-content">
+
+                    <h3>Security Research Intern (IIT Bombay)</h3>
+                    <p>
+                        Conducted in-depth performance and privacy analysis of reverse proxy services (e.g., Ngrok, LocalTunnel), examining their latency profiles, 
+                        network behavior, and feasibility as anonymous transport layers or TOR relays. Leading author of a paper under submission to ACM IMC 2025.
+                    </p>
+                    <h3>Student Intern (ISRO)</h3>
+                    <p>
+                        Designed and implemented a custom communication protocol for interfacing with a LIDAR sensor on embedded systems, focusing on 
+                        real-time performance, cryptographic integrity, and noise resilience in space-constrained environments.
+                    </p>
+
+                    <h3>Post-Quantum Safe IoT Framework</h3>
+                    <p>
+                        Engineered a lightweight, post-quantum secure communication stack for IoT devices using CRYSTALS-Kyber and Dilithium. 
+                        Benchmarked performance across ESP32 and STM32 platforms, achieving secure key exchange with minimal overhead.
+                    </p>
+
+                    <h3>Hidden Kernel Module</h3>
+                    <p>
+                        <a href="https://github.com/Het-Joshi/Stealth-Kernel-Module" target="_blank">GitHub Link</a><br>
+                        Developed a Linux Loadable Kernel Module (LKM) capable of hiding its presence from `lsmod`, `/proc/modules`, and kernel symbol tables. 
+                        Demonstrated practical stealth and anti-forensics techniques in Red Team and malware analysis simulations.
+                    </p>
+
+                    <h3>Rogue AP Detection and Mitigation Toolkit</h3>
+                    <p>
+                        Created a Wi-Fi security toolkit using Scapy and Airodump-ng to detect Evil Twin attacks, rogue access points, and ARP spoofing in real-time. 
+                    </p>
+
+                    <h3>High-Interaction Honeypot for Targeted Threat Profiling</h3>
+                    <p>
+                        Designed and deployed a custom high-interaction honeypot environment simulating vulnerable Linux servers and misconfigured Docker APIs to attract real-world attackers.  
+                        Integrated ELK stack for real-time telemetry, with automated threat labeling via AbuseIPDB and MISP correlation.  
+                        Captured and analyzed live exploitation attempts including SSH brute-force, reverse shells, and privilege escalation chains.  
+                        Used findings to generate signatures for anomaly detection systems and present workshops on threat actor TTPs.
+                    </p>
+
+                </div>
+            </div>
+
+
+            <div class="app-window" id="contact">
+                <button class="back"><i class="fas fa-arrow-left"></i> Back</button>
+                <header>Contact Me</header>
+                <div class="app-content">
+                    <p>Feel free to reach out through any of the following methods:</p>
+                    <ul>
+                        <li><strong>Email:</strong> <a href="mailto:hetjoshi.mukt@pm.me">hetjoshi.mukt@pm.me</a></li>
+                        <li><strong>LinkedIn:</strong> <a href="https://linkedin.com/in/hetjoshi" target="_blank">linkedin.com/in/hetjoshi</a></li>
+                        <li><strong>GitHub:</strong> <a href="https://github.com/Het-Joshi" target="_blank">github.com/Het-Joshi</a></li>
+                    </ul>
+                    <p>I'm always open to discussing new projects and collaborations. Looking forward to connecting with you!</p>
+                </div>
+            </div>
+            <!-- End of App Windows -->
         </div>
 
-        <div class="app-window" id="about">
-            <button class="back"><i class="fas fa-arrow-left"></i></button>
-            <header>About Me</header>
-            <p>Namaste! I'm Het Joshi, a passionate cybersecurity enthusiast 
-                and FOSS advocate. Completed my Bachelor's of Engineering in Computer Science and Engineering at 
-                <a href="https://msrit.edu/">Ramaiah Institute of Technology</a>, India. My interests span 
-                network security, OSINT, and software development, with a focus 
-                on fostering privacy and upholding user rights. I also have a deep interest in security Research!
-            </p>
-            <p>I am the founder of Mukti, a student club supported 
-                by organizations like 
-                <a href="https://fossunited.org" target="_blank">FOSS United</a>
-                 and <a href="https://fsmk.org" target="_blank">FSMK</a>, 
-                 where we collaborate on innovative FOSS projects and explore 
-                 cutting-edge cybersecurity solutions.
-            </p>
-            <div class="image-container">
-                <img class="image-pfp" src="het-joshi.jpg" alt="Het Joshi">
-            </div>
-        </div>
-        
-        <div class="app-window" id="skills">
-            <button class="back"><i class="fas fa-arrow-left"></i></button>
-            <header>Skills</header>
-            <div class="content">
-                <h3>Programming Languages:</h3>
-                <ul>
-                    <li>C/C++</li>
-                    <li>Java</li>
-                    <li>Python</li>
-                    <li>JavaScript</li>
-                    <li>RUST</li>
-                    <li>Bend</li>
-                </ul>
-                <h3>System Administration:</h3>
-                <ul>
-                    <li>Linux</li>
-                    <li>AWS</li>
-                    <li>Server Maintenance</li>
-                    <li>Self-Hosting Services</li>
-                </ul>
-                <h3>Cybersecurity:</h3>
-                <ul>
-                    <li>Penetration Testing</li>
-                    <li>OSINT</li>
-                    <li>Network Security</li>
-                    <li>BASH Scripting</li>
-                </ul>
-                <h3>Development Tools:</h3>
-                <ul>
-                    <li>Git</li>
-                    <li>JIRA</li>
-                    <li>Jenkins</li>
-                    <li>Terraform</li>
-                </ul>
-                <h3>Other Areas of Interest:</h3>
-                <ul>
-                    <li>Machine Learning</li>
-                    <li>Cloud Computing</li>
-                    <li>Web Application Development</li>
-                </ul>
-            </div>
-        </div>
-        
-        <div class="app-window" id="projects">
-            <button class="back"><i class="fas fa-arrow-left"></i></button>
-            <header>Projects</header>
-            <div class="content">
-                <h3>Hidden Kernel Module</h3>
-                <p>
-                    <a href="https://github.com/Het-Joshi/Stealth-Kernel-Module" target="_blank">Hidden Kernel Module</a><br>
-                    Developed a Linux Kernel module that remains hidden from search utilities, enhancing system security by preventing unauthorized access detection.
-                </p>
-                <h3>Post-Quantum Framework for IoT Devices</h3>
-                <p>
-                    Created a framework using post-quantum cryptographic algorithms to secure IoT devices against quantum computing threats, ensuring future-proof data protection.
-                </p>
-                <h3>OCPP Protocol Security Assessment for EV Charging Stations</h3>
-                <p>
-                    Conducted a security assessment of the Open Charge Point Protocol (OCPP) for EV charging stations, identifying vulnerabilities and recommending enhancements to improve communication security.
-                </p>
-                <h3>Laboratory for Electro-Optics Systems (LEOS), ISRO</h3>
-                <p>
-                    Developed a secure high-speed interface for communication between a system and a LIDAR sensor using C. Implemented socket programming and network protocols, enhancing data transfer efficiency. Deployed the solution on an embedded system board, ensuring reliable performance in real-time applications.
-                </p>
-                <italics>note: Links for few projects cannot be shared due to current IPR considerations.</italics>
-            </div>
-        </div>
-        
-        <div class="app-window" id="talks">
-            <button class="back"><i class="fas fa-arrow-left"></i></button>
-            <header>Talks & Workshops</header>
-            <div class="content">
-                <h3>FOSSX Challenge at Indian Institute of Technology, Bombay</h3>
-                <p>
-                    <strong>Role:</strong> Guide and Mentor<br>
-                    Mentored 12 teams of participants across India, guiding them in developing white papers on open-source cybersecurity tools. Provided strategic insights and technical expertise, contributing to the development of innovative solutions in cybersecurity.
-                    <a href="https://trustlab.iitb.ac.in/trust-matters-2024-apr-fossx">Event Newsletter</a>
-                </p>
-                <h3>Top Speaker at National Institute of Technology, Calicut</h3>
-                <p>
-                    The FOSSCell in NIT-C awarded this for my talk on security challenges for the future and what we as a community can do to tackle them.
-                    <a href="https://www.fossmeet.net/speakers">List of Speakers</a>
-                </p>
-            </div>
-        <div class="image-container">
-            <img src="Profile.png" class="image-pfp">
-            <img src="iit.jpeg" class="image-pfp">
-        </div>
-        </div>
-        
-        <div class="app-window" id="contact">
-            <button class="back"><i class="fas fa-arrow-left"></i></button>
-            <header>Contact Me</header>
-            <div class="content">
-                <p>If you'd like to get in touch, feel free to reach out through any of the following methods:</p>
-                <ul>
-                    <li><strong>Email:</strong> <a href="mailto:hetjoshi.mukt@pm.me">hetjoshi.mukt@pm.com</a></li>
-                    <li><strong>LinkedIn:</strong> <a href="https://linkedin.com/in/hetjoshi" target="_blank">linkedin.com/in/hetjoshi</a></li>
-                    <li><strong>GitHub:</strong> <a href="https://github.com/Het-Joshi" target="_blank">github.com/Het-Joshi</a></li>
-                </ul>
-                <p>I'm always open to discussing new projects, collaborations, or any inquiries you might have about my work. Looking forward to connecting with you!</p>
-                <img src="hack.png" class="image-pfp2">
-            </div>
-        </div>
-        
         <div class="pipboy-dock">
-            <button class="home"><i class="fas fa-home"></i></button>
-            <button class="back"><i class="fas fa-arrow-left"></i></button>
-            <button class="menu"><i class="fab fa-whatsapp"></i></button>
-        </div>
-
-        <div class="notification" id="notification" style="display: none;">
-            New Achievement Unlocked!
+            <button class="home-button"><i class="fas fa-home"></i> HOME</button>
+            <button class="menu-button" title="Contact me on WhatsApp"><i class="fab fa-whatsapp"></i> MSG</button>
         </div>
     </div>
 
-    <!-- Bootstrap JS, jQuery, and your custom script -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="script.js"></script>
+    <!-- Audio files for sound effects -->
+    <audio id="audio-click" src="UI_VATS_Ready.mp3" preload="auto"></audio>
+    <audio id="audio-open" src="UI_LoadScreen_ShaderEnter_01.mp3" preload="auto"></audio>
+    <audio id="audio-boot" src="UI_Terminal_Holotape_ProgramLoad_01.mp3" preload="auto"></audio>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- ELEMENTS ---
+            const clockElement = document.getElementById('clock');
+            const bootScreen = document.querySelector('.boot-screen');
+            const bootTextElement = document.getElementById('boot-text');
+            const pipboy = document.querySelector('.pipboy');
+
+            const appIcons = document.querySelectorAll('.app-icon');
+            const appWindows = document.querySelectorAll('.app-window');
+            const backButtons = document.querySelectorAll('.app-window .back');
+            const homeButton = document.querySelector('.home-button');
+            const menuButton = document.querySelector('.menu-button');
+
+            const audioClick = document.getElementById('audio-click');
+            const audioOpen = document.getElementById('audio-open');
+            const audioBoot = document.getElementById('audio-boot');
+
+            // --- STATE ---
+            let activeWindow = null;
+
+            // --- FUNCTIONS ---
+
+            // Update the clock every second
+            function updateTime() {
+                const now = new Date();
+                const timeString = now.toTimeString().split(' ')[0];
+                clockElement.textContent = timeString;
+            }
+
+            // Play a sound safely
+            function playSound(audioElement) {
+                // Check if context is running, if not, resume it
+                if (audioElement.paused) {
+                    audioElement.currentTime = 0;
+                    audioElement.play().catch(error => console.log(`Sound play failed: ${error.message}`));
+                }
+            }
+
+            // Open an app window
+            function openApp(appName) {
+                closeAllApps(true); // Close silently
+                const appWindow = document.getElementById(appName);
+                if (appWindow) {
+                    playSound(audioOpen);
+                    appWindow.classList.add('active');
+                    activeWindow = appWindow;
+                }
+            }
+
+            // Close all app windows
+            function closeAllApps(silent = false) {
+                if (activeWindow) {
+                    if (!silent) playSound(audioClick);
+                    appWindows.forEach(window => window.classList.remove('active'));
+                    activeWindow = null;
+                }
+            }
+
+            // --- BOOT UP SEQUENCE ---
+            const bootLines = [
+                'BOOTING VAYU-OS (v1.0.0)...',
+                'Copyright (c) 2025 MUKTI Community',
+                'Kernel Version: 6.1.0-HET',
+                'Initializing memory... 128KB OK',
+                'Loading drivers...',
+                '  [OK] Network Interface (WIFI-5G)',
+                '  [OK] Audio Subsystem',
+                '  [OK] I/O Interface',
+                'Checking system integrity...',
+                'Mounting file systems...',
+                'Starting UI...',
+                'Welcome, Het Joshi.',
+            ];
+
+            function runBootSequence() {
+                playSound(audioBoot);
+                let lineIndex = 0;
+                let charIndex = 0;
+                
+                const intervalId = setInterval(() => {
+                    if (lineIndex < bootLines.length) {
+                        const currentLine = bootLines[lineIndex];
+                        bootTextElement.textContent += currentLine.charAt(charIndex);
+                        charIndex++;
+                        if (charIndex === currentLine.length) {
+                            bootTextElement.textContent += '\n';
+                            charIndex = 0;
+                            lineIndex++;
+                        }
+                    } else {
+                        clearInterval(intervalId);
+                        // Finish boot sequence
+                        setTimeout(() => {
+                            bootScreen.style.opacity = '0';
+                            pipboy.classList.add('active');
+                            setTimeout(() => {
+                                bootScreen.style.display = 'none';
+                                pipboy.style.opacity = '1';
+                            }, 1000);
+                        }, 700);
+                    }
+                }, 12); // Typing speed
+            }
+
+
+            // --- EVENT LISTENERS ---
+            appIcons.forEach(icon => {
+                icon.addEventListener('click', () => {
+                    const appName = icon.getAttribute('data-app');
+                    openApp(appName);
+                });
+            });
+
+            backButtons.forEach(button => {
+                button.addEventListener('click', () => closeAllApps());
+            });
+
+            homeButton.addEventListener('click', () => closeAllApps());
+
+            menuButton.addEventListener('click', () => {
+                playSound(audioClick);
+                window.open('https://wa.me/+917400188414', '_blank');
+            });
+
+            // --- INITIALIZATION ---
+            setInterval(updateTime, 1000);
+            updateTime();
+            
+            // Start boot sequence after a small delay to ensure assets are ready
+            setTimeout(runBootSequence, 500);
+        });
+    </script>
 </body>
 </html>
